@@ -1,0 +1,498 @@
+/* 基本リセット */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: sans-serif;
+  background: #f5f5f5;
+  color: #333;
+}
+
+#app {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+/* ヘッダー */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 2px solid #ccc;
+  margin-bottom: 16px;
+}
+
+#header-btns {
+  display: flex;
+  gap: 8px;
+}
+
+h1 { font-size: 24px; }
+h2 { font-size: 18px; margin-bottom: 8px; }
+h3 { font-size: 15px; margin: 12px 0 6px; }
+
+/* 各セクション */
+section {
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+/* 入力グループ */
+.input-group {
+  margin-bottom: 16px;
+}
+
+.input-group label {
+  display: block;
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 4px;
+  margin-top: 8px;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.input-group select {
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: white;
+}
+
+/* ボタン基本 */
+button {
+  padding: 8px 16px;
+  font-size: 14px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  background: #4a90d9;
+  color: white;
+  margin-right: 8px;
+}
+
+button:hover { background: #357abd; }
+
+/* 変更内容ボタン */
+#type-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.type-btn {
+  background: #e0e0e0;
+  color: #333;
+  border: 2px solid transparent;
+}
+
+.type-btn:hover { background: #bdbdbd; }
+
+.type-btn.selected {
+  background: #4a90d9;
+  color: white;
+  border-color: #357abd;
+}
+
+/* 記録するボタン */
+#btn-submit,
+#btn-admission-submit,
+#btn-register-patient {
+  display: block;
+  width: 100%;
+  margin-top: 24px;
+  padding: 12px;
+  font-size: 16px;
+  background: #2e7d32;
+}
+
+#btn-submit:hover,
+#btn-admission-submit:hover,
+#btn-register-patient:hover { background: #1b5e20; }
+
+/* 対応待ちエリア */
+#pending-area { border-left: 4px solid #e67e22; }
+#pending-list li {
+  padding: 6px 0;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  list-style: none;
+}
+
+/* 非表示クラス */
+.hidden { display: none !important; }
+
+/* アラートポップアップ */
+#alert-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  justify-content: center;
+  align-items: center;
+}
+
+#alert-overlay:not(.hidden) { display: flex; }
+
+#alert-box {
+  background: white;
+  border-radius: 8px;
+  padding: 24px;
+  max-width: 400px;
+  width: 90%;
+}
+
+#alert-box h3 { color: #e67e22; margin-bottom: 12px; }
+#alert-message { margin-bottom: 16px; line-height: 1.6; white-space: pre-line; }
+
+/* 履歴リスト */
+#history-list li {
+  padding: 8px;
+  margin-bottom: 6px;
+  border-radius: 4px;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.history-add    { background: #e8f5e9; border-left: 4px solid #4caf50; }
+.history-stop   { background: #fce4ec; border-left: 4px solid #e91e63; }
+.history-change { background: #fff8e1; border-left: 4px solid #ff9800; }
+
+/* 履歴の編集・削除ボタン */
+.history-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 4px;
+}
+
+.btn-edit {
+  font-size: 11px;
+  padding: 3px 8px;
+  background: #ff9800;
+  margin-right: 0;
+}
+
+.btn-edit:hover { background: #e65100; }
+
+.btn-delete {
+  font-size: 11px;
+  padding: 3px 8px;
+  background: #e53935;
+  margin-right: 0;
+}
+
+.btn-delete:hover { background: #b71c1c; }
+
+/* チェックリスト */
+#checklist li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid #eee;
+  list-style: none;
+}
+
+/* 患者一覧 */
+#patient-list li {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  list-style: none;
+}
+
+#patient-list li:hover { background: #f0f0f0; }
+
+.badge {
+  background: #e53935;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 7px;
+  font-size: 12px;
+}
+
+/* 入退院ボタン */
+#admission-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.admission-btn {
+  background: #e0e0e0;
+  color: #333;
+  border: 2px solid transparent;
+}
+
+.admission-btn:hover { background: #bdbdbd; }
+
+.admission-btn[data-kind="入院"].selected {
+  background: #1976d2;
+  color: white;
+  border-color: #1565c0;
+}
+
+.admission-btn[data-kind="退院"].selected {
+  background: #7b1fa2;
+  color: white;
+  border-color: #6a1b9a;
+}
+
+/* 入退院履歴 */
+#admission-list li {
+  padding: 8px;
+  margin-bottom: 6px;
+  border-radius: 4px;
+  list-style: none;
+}
+
+.admission-in  { background: #e3f2fd; border-left: 4px solid #1976d2; }
+.admission-out { background: #f3e5f5; border-left: 4px solid #7b1fa2; }
+
+/* 日付入力 */
+input[type="date"] {
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* 編集ポップアップ */
+#edit-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  justify-content: center;
+  align-items: center;
+}
+
+#edit-overlay:not(.hidden) { display: flex; }
+
+#edit-box {
+  background: white;
+  border-radius: 8px;
+  padding: 24px;
+  max-width: 400px;
+  width: 90%;
+}
+
+#edit-box h3 { margin-bottom: 16px; }
+
+#edit-box label {
+  display: block;
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 4px;
+  margin-top: 12px;
+}
+
+#edit-box input {
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+#leave-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  justify-content: center;
+  align-items: center;
+}
+
+#leave-overlay:not(.hidden) { display: flex; }
+
+#leave-box {
+  background: white;
+  border-radius: 8px;
+  padding: 24px;
+  max-width: 400px;
+  width: 90%;
+}
+
+#leave-box h3 { margin-bottom: 12px; }
+#leave-box p { margin-bottom: 12px; }
+
+#leave-box label {
+  display: block;
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+#leave-box input {
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* 現在の服用薬カード */
+.med-card {
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 6px 10px;
+  margin-bottom: 4px;
+}
+
+.med-card .med-name {
+  font-weight: bold;
+  font-size: 13px;
+  margin-bottom: 2px;
+}
+
+.med-card .med-hospital {
+  font-size: 11px;
+  color: #1976d2;
+  margin-bottom: 1px;
+}
+
+.med-card .med-note {
+  font-size: 11px;
+  color: #888;
+}
+
+.med-hospital-group {
+  margin-bottom: 8px;
+}
+
+.med-hospital-label {
+  font-size: 11px;
+  font-weight: bold;
+  color: #1976d2;
+  border-bottom: 1px solid #bbdefb;
+  padding-bottom: 2px;
+  margin-bottom: 4px;
+}
+
+/* 新規患者登録の薬入力行 */
+.med-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+  align-items: flex-start;
+}
+
+.med-row input {
+  flex: 1;
+}
+
+.med-row select {
+  flex: 1;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: white;
+}
+
+.btn-remove-med {
+  background: #e53935;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-right: 0;
+  flex-shrink: 0;
+}
+
+.btn-remove-med:hover { background: #b71c1c; }
+
+#btn-add-med-row {
+  background: #e0e0e0;
+  color: #333;
+  margin-top: 4px;
+}
+
+#btn-add-med-row:hover { background: #bdbdbd; }
+
+/* 病院マスタ */
+#hospital-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+  list-style: none;
+}
+
+.btn-delete-hospital {
+  font-size: 11px;
+  padding: 3px 8px;
+  background: #e53935;
+  margin-right: 0;
+}
+
+.btn-delete-hospital:hover { background: #b71c1c; }
+
+/* 退居関連 */
+#btn-leave-patient {
+  margin-bottom: 16px;
+}
+
+#btn-toggle-left {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #eee;
+  user-select: none;
+}
+
+#left-patient-list li {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  list-style: none;
+  color: #888;
+  background: #f5f5f5;
+}
+
+/* 入院中ラベル */
+.admitted-label {
+  background: #1976d2;
+  color: white;
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-right: 6px;
+}
+
+#leave-btn-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+#backup-area {
+  text-align: center;
+}
+
+#backup-area button {
+  margin: 4px;
+}

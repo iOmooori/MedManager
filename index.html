@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MedManager</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div id="app">
+
+    <!-- ヘッダー -->
+    <header>
+      <h1 id="btn-home" style="cursor:pointer;">MedManager</h1>
+      <div id="header-btns">
+        <button id="btn-hospital-master">病院マスタ</button>
+        <button id="btn-patient-list">患者一覧</button>
+        <button id="btn-back-to-list" class="hidden">← 患者一覧へ</button>
+      </div>
+    </header>
+
+    <!-- 対応待ちエリア -->
+    <section id="pending-area">
+      <h2>⚠️ 対応待ち</h2>
+      <ul id="pending-list"></ul>
+    </section>
+
+    <!-- 入力エリア -->
+    <section id="input-area">
+      <h2>処方変更を入力</h2>
+
+      <div class="input-group">
+        <label>患者番号</label>
+        <select id="select-patient">
+          <option value="">--- 選択してください ---</option>
+        </select>
+      </div>
+
+      <!-- 追加：自由入力 -->
+      <div class="input-group" id="group-drug">
+       <label>薬品名</label>
+       <input type="text" id="input-drug" placeholder="例）ロキソニン60mg" list="drug-suggestions">
+       <datalist id="drug-suggestions"></datalist>
+      </div>
+
+      <!-- 中止：選択式 -->
+      <div class="input-group hidden" id="group-drug-stop">
+        <label>薬品名</label>
+        <select id="select-drug-stop">
+          <option value="">--- 選択してください ---</option>
+        </select>
+      </div>
+
+      <!-- 用量変更：選択式 -->
+      <div class="input-group hidden" id="group-drug-dose">
+        <label>変更前の薬品名</label>
+        <select id="select-drug-dose">
+          <option value="">--- 選択してください ---</option>
+        </select>
+      </div>
+
+      <!-- 薬品切替：選択式＋自由入力 -->
+      <div class="input-group hidden" id="group-drug-switch">
+        <label>変更前の薬品名</label>
+        <select id="select-drug-switch-before">
+          <option value="">--- 選択してください ---</option>
+        </select>
+        <label>変更後の薬品名</label>
+        <input type="text" id="input-switch-after" placeholder="例）カロナール500mg">
+      </div>
+
+      <div class="input-group">
+        <label>変更内容</label>
+        <div id="type-buttons">
+          <button class="type-btn" data-type="追加">追加</button>
+          <button class="type-btn" data-type="中止">中止</button>
+          <button class="type-btn" data-type="用量変更">用量変更</button>
+          <button class="type-btn" data-type="薬品切替">薬品切替</button>
+        </div>
+      </div>
+
+      <!-- 追加時の病院選択 -->
+      <div class="input-group hidden" id="group-hospital">
+        <label>処方病院</label>
+        <select id="select-hospital">
+          <option value="">--- 選択してください ---</option>
+        </select>
+      </div>
+
+      <div class="input-group hidden" id="group-reason">
+        <label>理由（任意）</label>
+        <input type="text" id="input-reason" placeholder="例）胃痛のため">
+      </div>
+
+      <div class="input-group hidden" id="group-dose">
+        <label>変更後の用量</label>
+        <input type="text" id="input-dose-after" placeholder="例）30mg">
+      </div>
+
+      <button id="btn-submit">記録する</button>
+    </section>
+
+    <!-- 入退院記録エリア -->
+    <section id="admission-area">
+      <h2>入退院を記録</h2>
+
+      <div class="input-group">
+        <label>患者番号</label>
+        <select id="select-admission-patient">
+          <option value="">--- 選択してください ---</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <label>種別</label>
+        <div id="admission-buttons">
+          <button class="admission-btn" data-kind="入院">入院</button>
+          <button class="admission-btn" data-kind="退院">退院</button>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label>日付</label>
+        <input type="date" id="input-admission-date">
+      </div>
+
+      <div class="input-group">
+        <label>備考（任意）</label>
+        <input type="text" id="input-admission-note" placeholder="例）骨折のため、リハビリ目的">
+      </div>
+
+      <button id="btn-admission-submit">記録する</button>
+    </section>
+
+    <!-- 新規患者登録エリア -->
+    <section id="register-area">
+      <h2>新規患者登録</h2>
+
+      <div class="input-group">
+        <label>患者番号</label>
+        <input type="text" id="input-new-patient-id" placeholder="例）001">
+      </div>
+
+      <div class="input-group">
+        <label>現在の服用薬</label>
+        <div id="new-med-list"></div>
+        <button id="btn-add-med-row">＋ 薬を追加</button>
+      </div>
+
+      <button id="btn-register-patient">登録する</button>
+    </section>
+
+    <!-- 患者一覧エリア（最初は非表示） -->
+    <section id="patient-list-area" class="hidden">
+      <h2>患者一覧</h2>
+      <ul id="patient-list"></ul>
+
+      <h3 id="btn-toggle-left" style="cursor:pointer;">▶ 退居した患者一覧</h3>
+      <ul id="left-patient-list" class="hidden"></ul>
+    </section>
+
+    <!-- 患者詳細エリア（最初は非表示） -->
+    <section id="patient-detail-area" class="hidden">
+      <h2 id="detail-patient-id"></h2>
+
+      <h3>対応チェックリスト</h3>
+      <ul id="checklist"></ul>
+
+      <h3>現在の服用薬</h3>
+      <div id="current-meds"></div>
+
+      <h3>処方変更履歴</h3>
+      <ul id="history-list"></ul>
+
+      <h3>入退院履歴</h3>
+      <ul id="admission-list"></ul>
+
+      <div id="leave-btn-wrapper">
+        <button id="btn-leave-patient" style="background:#757575;">退居する</button>
+      </div>
+    </section>
+
+    <!-- 病院マスタエリア（最初は非表示） -->
+    <section id="hospital-master-area" class="hidden">
+      <h2>病院マスタ管理</h2>
+      <ul id="hospital-list"></ul>
+      <div class="input-group">
+        <label>病院名を追加</label>
+        <input type="text" id="input-new-hospital" placeholder="例）○○病院">
+      </div>
+      <button id="btn-add-hospital">追加する</button>
+    </section>
+
+    <!-- アラートポップアップ -->
+    <div id="alert-overlay" class="hidden">
+      <div id="alert-box">
+        <h3>⚠️ アラート</h3>
+        <p id="alert-message"></p>
+        <button id="btn-go-detail">患者ページへ</button>
+        <button id="btn-record-anyway">このまま記録する</button>
+      </div>
+    </div>
+
+    <!-- 編集ポップアップ -->
+    <div id="edit-overlay" class="hidden">
+      <div id="edit-box">
+        <h3>履歴を編集</h3>
+        <label>日付</label>
+        <input type="date" id="edit-date">
+        <label>理由</label>
+        <input type="text" id="edit-reason" placeholder="例）胃痛のため">
+        <div style="display:flex; gap:8px; margin-top:16px;">
+          <button id="btn-edit-save">保存する</button>
+          <button id="btn-edit-cancel" style="background:#aaa;">キャンセル</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 退居確認ポップアップ -->
+    <div id="leave-overlay" class="hidden">
+      <div id="leave-box">
+        <h3>退居の確認</h3>
+        <p>患者番号 <span id="leave-patient-id"></span> を退居扱いにします。</p>
+        <label>退居日</label>
+        <input type="date" id="leave-date">
+        <div style="display:flex; gap:8px; margin-top:16px;">
+          <button id="btn-leave-confirm">退居する</button>
+          <button id="btn-leave-cancel" style="background:#aaa;">キャンセル</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- バックアップエリア -->
+    <section id="backup-area">
+      <h2>データのバックアップ</h2>
+      <button id="btn-export">データを書き出す（保存する）</button>
+      <button id="btn-import" style="background:#757575;">データを読み込む（復元する）</button>
+      <input type="file" id="file-import" accept=".json" class="hidden">
+    </section>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
