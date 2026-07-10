@@ -26,6 +26,22 @@
       <ul id="pending-list"></ul>
     </section>
 
+    <!-- 自由ToDo入力エリア -->
+    <section id="todo-area">
+      <h2>やることを追加</h2>
+      <div class="input-group">
+        <label>患者番号</label>
+        <select id="select-todo-patient">
+          <option value="">--- 選択してください ---</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label>内容</label>
+        <input type="text" id="input-todo-text" placeholder="例）家族に電話で確認する">
+      </div>
+      <button id="btn-add-todo">追加する</button>
+    </section>
+
     <!-- 入力エリア -->
     <section id="input-area">
       <h2>処方変更を入力</h2>
@@ -37,11 +53,21 @@
         </select>
       </div>
 
+      <div class="input-group">
+        <label>変更内容</label>
+        <div id="type-buttons">
+          <button class="type-btn" data-type="追加">追加</button>
+          <button class="type-btn" data-type="中止">中止</button>
+          <button class="type-btn" data-type="用量変更">用量変更</button>
+          <button class="type-btn" data-type="薬品切替">薬品切替</button>
+        </div>
+      </div>
+
       <!-- 追加：自由入力 -->
-      <div class="input-group" id="group-drug">
-       <label>薬品名</label>
-       <input type="text" id="input-drug" placeholder="例）ロキソニン60mg" list="drug-suggestions">
-       <datalist id="drug-suggestions"></datalist>
+      <div class="input-group hidden" id="group-drug">
+        <label>薬品名</label>
+        <input type="text" id="input-drug" placeholder="例）ロキソニン60mg" list="drug-suggestions">
+        <datalist id="drug-suggestions"></datalist>
       </div>
 
       <!-- 中止：選択式 -->
@@ -68,16 +94,6 @@
         </select>
         <label>変更後の薬品名</label>
         <input type="text" id="input-switch-after" placeholder="例）カロナール500mg">
-      </div>
-
-      <div class="input-group">
-        <label>変更内容</label>
-        <div id="type-buttons">
-          <button class="type-btn" data-type="追加">追加</button>
-          <button class="type-btn" data-type="中止">中止</button>
-          <button class="type-btn" data-type="用量変更">用量変更</button>
-          <button class="type-btn" data-type="薬品切替">薬品切替</button>
-        </div>
       </div>
 
       <!-- 追加時の病院選択 -->

@@ -170,6 +170,7 @@ button:hover { background: #357abd; }
   display: flex;
   align-items: center;
   gap: 8px;
+  font-size: 11px;
 }
 
 .history-add    { background: #e8f5e9; border-left: 4px solid #4caf50; }
@@ -391,6 +392,48 @@ input[type="date"] {
   margin-bottom: 4px;
 }
 
+.med-card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.med-card-text {
+  font-size: 13px;
+  flex: 1;
+}
+
+.btn-edit-med {
+  font-size: 11px;
+  padding: 3px 10px;
+  background: #ff9800;
+  margin-right: 0;
+  flex-shrink: 0;
+}
+
+.btn-edit-med:hover { background: #e65100; }
+
+.med-card select,
+.med-card input {
+  width: 100%;
+  padding: 6px;
+  font-size: 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 6px;
+}
+
+.med-edit-btns {
+  display: flex;
+  gap: 6px;
+}
+
+.med-edit-btns button {
+  font-size: 12px;
+  padding: 4px 10px;
+}
+
 /* 新規患者登録の薬入力行 */
 .med-row {
   display: flex;
@@ -496,3 +539,13 @@ input[type="date"] {
 #backup-area button {
   margin: 4px;
 }
+
+.med-note-edit input {
+  width: 100%;
+  padding: 4px 6px;
+  font-size: 11px;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  color: #888;
+}
+

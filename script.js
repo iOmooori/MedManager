@@ -30,12 +30,14 @@ function showHome() {
   document.getElementById('input-area').classList.remove('hidden');
   document.getElementById('admission-area').classList.remove('hidden');
   document.getElementById('register-area').classList.remove('hidden');
+  document.getElementById('backup-area').classList.remove('hidden');
   document.getElementById('patient-list-area').classList.add('hidden');
   document.getElementById('patient-detail-area').classList.add('hidden');
   document.getElementById('hospital-master-area').classList.add('hidden');
   document.getElementById('btn-patient-list').classList.remove('hidden');
   document.getElementById('btn-hospital-master').classList.remove('hidden');
   document.getElementById('btn-back-to-list').classList.add('hidden');
+  document.getElementById('todo-area').classList.remove('hidden');
   renderPending();
   updatePatientSelects();
   updateHospitalSelects();
@@ -48,6 +50,8 @@ function showPatientList() {
   document.getElementById('input-area').classList.add('hidden');
   document.getElementById('admission-area').classList.add('hidden');
   document.getElementById('register-area').classList.add('hidden');
+  document.getElementById('backup-area').classList.add('hidden');
+  document.getElementById('todo-area').classList.add('hidden');
   document.getElementById('patient-list-area').classList.remove('hidden');
   document.getElementById('patient-detail-area').classList.add('hidden');
   document.getElementById('hospital-master-area').classList.add('hidden');
@@ -64,6 +68,8 @@ function showPatientDetail(patientId) {
   document.getElementById('input-area').classList.add('hidden');
   document.getElementById('admission-area').classList.add('hidden');
   document.getElementById('register-area').classList.add('hidden');
+  document.getElementById('backup-area').classList.add('hidden');
+  document.getElementById('todo-area').classList.add('hidden');
   document.getElementById('patient-list-area').classList.add('hidden');
   document.getElementById('patient-detail-area').classList.remove('hidden');
   document.getElementById('hospital-master-area').classList.add('hidden');
@@ -71,6 +77,12 @@ function showPatientDetail(patientId) {
   document.getElementById('btn-hospital-master').classList.add('hidden');
   document.getElementById('btn-back-to-list').classList.remove('hidden');
   document.getElementById('detail-patient-id').textContent = `患者番号：${patientId}`;
+
+  // 退去済みなら退去ボタンを隠す
+  const data = loadData();
+  const isLeft = data[patientId].isLeft;
+  document.getElementById('leave-btn-wrapper').classList.toggle('hidden', isLeft);
+
   renderPatientDetail(patientId);
 }
 
@@ -80,6 +92,8 @@ function showHospitalMaster() {
   document.getElementById('input-area').classList.add('hidden');
   document.getElementById('admission-area').classList.add('hidden');
   document.getElementById('register-area').classList.add('hidden');
+  document.getElementById('backup-area').classList.add('hidden');
+  document.getElementById('todo-area').classList.add('hidden');
   document.getElementById('patient-list-area').classList.add('hidden');
   document.getElementById('patient-detail-area').classList.add('hidden');
   document.getElementById('hospital-master-area').classList.remove('hidden');
@@ -159,17 +173,20 @@ function updateHospitalSelects() {
 // =====================
 function updatePatientSelects() {
   const data = loadData();
-  ['select-patient', 'select-admission-patient'].forEach(selectId => {
+  ['select-patient', 'select-admission-patient', 'select-todo-patient'].forEach(selectId => {
     const select = document.getElementById(selectId);
     if (!select) return;
     const current = select.value;
     select.innerHTML = '<option value="">--- 選択してください ---</option>';
-    Object.keys(data).forEach(id => {
-      const opt = document.createElement('option');
-      opt.value = id;
-      opt.textContent = `患者番号：${id}`;
-      select.appendChild(opt);
-    });
+    Object.keys(data)
+      .filter(id => !data[id].isLeft) // ← 退去してへん人だけ
+      .sort()
+      .forEach(id => {
+        const opt = document.createElement('option');
+        opt.value = id;
+        opt.textContent = `患者番号：${id}`;
+        select.appendChild(opt);
+      });
     if (current) select.value = current;
   });
 }
@@ -229,8 +246,8 @@ function renderPatientList() {
   ul.innerHTML = '';
   leftUl.innerHTML = '';
 
-  const activeIds = Object.keys(data).filter(id => !data[id].isLeft);
-  const leftIds = Object.keys(data).filter(id => data[id].isLeft);
+  const activeIds = Object.keys(data).filter(id => !data[id].isLeft).sort();
+  const leftIds = Object.keys(data).filter(id => data[id].isLeft).sort();
 
   if (activeIds.length === 0) {
     ul.innerHTML = '<li>登録された患者なし</li>';
@@ -430,6 +447,7 @@ function renderPatientDetail(patientId) {
   if (!patient.currentMeds || patient.currentMeds.length === 0) {
     medsContainer.innerHTML = '<p>登録なし</p>';
   } else {
+
     // 病院ごとにグループ化
     const groups = {};
     patient.currentMeds.forEach(med => {
@@ -449,23 +467,14 @@ function renderPatientDetail(patientId) {
       groupDiv.appendChild(label);
 
       groups[hospitalName].forEach(med => {
-        const card = document.createElement('div');
-        card.className = 'med-card';
+      const card = document.createElement('div');
+      card.className = 'med-card';
+      card.id = `med-card-${med.name.replace(/\s/g, '_')}`;
 
-        const nameDiv = document.createElement('div');
-        nameDiv.className = 'med-name';
-        nameDiv.textContent = med.name;
-        card.appendChild(nameDiv);
+      renderMedCardView(card, patientId, med);
 
-        if (med.note) {
-          const noteDiv = document.createElement('div');
-          noteDiv.className = 'med-note';
-          noteDiv.textContent = `備考：${med.note}`;
-          card.appendChild(noteDiv);
-        }
-
-        groupDiv.appendChild(card);
-      });
+      groupDiv.appendChild(card);
+    });
 
       medsContainer.appendChild(groupDiv);
     });
@@ -528,6 +537,85 @@ function renderPatientDetail(patientId) {
 
   renderAdmissionList(patientId);
   renderChecklist(patientId);
+}
+
+// 服用薬カードの「通常表示」を描画
+function renderMedCardView(card, patientId, med) {
+  card.innerHTML = '';
+
+  const row = document.createElement('div');
+  row.className = 'med-card-row';
+
+  const textDiv = document.createElement('div');
+  textDiv.className = 'med-card-text';
+  textDiv.textContent = med.note ? `${med.name}：${med.note}` : med.name;
+
+  const editBtn = document.createElement('button');
+  editBtn.textContent = '編集';
+  editBtn.className = 'btn-edit-med';
+  editBtn.addEventListener('click', () => {
+    renderMedCardEdit(card, patientId, med);
+  });
+
+  row.appendChild(textDiv);
+  row.appendChild(editBtn);
+  card.appendChild(row);
+}
+
+// 服用薬カードの「編集モード」を描画
+function renderMedCardEdit(card, patientId, med) {
+  const hospitals = loadHospitals();
+  card.innerHTML = '';
+
+  const nameDiv = document.createElement('div');
+  nameDiv.className = 'med-name';
+  nameDiv.textContent = med.name;
+  card.appendChild(nameDiv);
+
+  const hospitalSelect = document.createElement('select');
+  hospitalSelect.innerHTML = '<option value="">病院（任意）</option>';
+  hospitals.forEach(name => {
+    const opt = document.createElement('option');
+    opt.value = name;
+    opt.textContent = name;
+    if (name === med.hospital) opt.selected = true;
+    hospitalSelect.appendChild(opt);
+  });
+
+  const noteInput = document.createElement('input');
+  noteInput.type = 'text';
+  noteInput.value = med.note || '';
+  noteInput.placeholder = '備考を入力';
+
+  const btnRow = document.createElement('div');
+  btnRow.className = 'med-edit-btns';
+
+  const saveBtn = document.createElement('button');
+  saveBtn.textContent = '保存';
+  saveBtn.addEventListener('click', () => {
+    const d = loadData();
+    const targetMed = d[patientId].currentMeds.find(m => m.name === med.name);
+    if (targetMed) {
+      targetMed.hospital = hospitalSelect.value;
+      targetMed.note = noteInput.value.trim();
+    }
+    saveData(d);
+    renderPatientDetail(patientId); // 病院ごとの並び替えもあるので全体を再描画
+  });
+
+  const cancelBtn = document.createElement('button');
+  cancelBtn.textContent = 'キャンセル';
+  cancelBtn.style.background = '#aaa';
+  cancelBtn.addEventListener('click', () => {
+    renderMedCardView(card, patientId, med);
+  });
+
+  btnRow.appendChild(saveBtn);
+  btnRow.appendChild(cancelBtn);
+
+  card.appendChild(hospitalSelect);
+  card.appendChild(noteInput);
+  card.appendChild(btnRow);
 }
 
 // 現在の服用薬を履歴から再計算
@@ -900,6 +988,26 @@ document.getElementById('btn-home').addEventListener('click', showHome);
 document.getElementById('btn-patient-list').addEventListener('click', showPatientList);
 document.getElementById('btn-back-to-list').addEventListener('click', showPatientList);
 document.getElementById('btn-hospital-master').addEventListener('click', showHospitalMaster);
+document.getElementById('btn-add-todo').addEventListener('click', () => {
+  const patientId = document.getElementById('select-todo-patient').value;
+  const text = document.getElementById('input-todo-text').value.trim();
+
+  if (!patientId) { alert('患者番号を選択してください'); return; }
+  if (!text) { alert('内容を入力してください'); return; }
+
+  const data = loadData();
+  data[patientId].checklist.push({
+    id: Date.now(),
+    text: text,
+    done: false
+  });
+  saveData(data);
+
+  document.getElementById('input-todo-text').value = '';
+  document.getElementById('select-todo-patient').value = '';
+  renderPending();
+  alert(`患者番号 ${patientId} にやることを追加しました`);
+});
 
 // =====================
 // バックアップ（書き出し・読み込み）
